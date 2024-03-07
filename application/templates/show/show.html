@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}
+Show Details
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">{{ show.name }}</h1>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Show Details</h5>
+            <table class="table table-bordered">
+                <tbody>
+
+                    <tr>
+                        <th scope="row">Show Name</th>
+                        <td>{{ show.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Rating</th>
+                        <td>{{ show.rating|round(2) }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Tags</th>
+                        <td>{{ show.tags }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Venue Name</th>
+                        <td><a href="{{url_for('venue.venue',id=show.venue.id)}}">{{ show.venue.name }}</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Ticket Price</th>
+                        <td>{{ show.ticket_price }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Start Time</th>
+                        <td>{{ show.start_time }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">End Time</th>
+                        <td>{{ show.end_time }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Description</th>
+                        <td>{{ show.description }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="my-4">Book Tickets</h2>
+        {%if show.unsold_tickets %}
+        <form action="{{url_for('booking.register',show_id=show.id)}}" method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.num_tickets.label(class="form-label") }}
+                {{ form.num_tickets(class="form-control") }}
+            </div>
+            <input type="hidden" name="venue_id" value="{{show.venue.id}}">
+            <button type="submit" class="btn btn-primary mt-3">{{ form.submit.label }}</button>
+        </form>
+        {%else%}
+        <p class="text-danger font-weight-bold">Sold Out!</p>
+        {%endif%}
+    </div>
+
+    <section>
+        <div class="row my-4">
+            <div class="col-md-12">
+                <h2>Bookings</h2>
+            </div>
+        </div>
+        <div class="row">
+            {% for booking in current_user.bookings %}
+            {% if booking.show.id == show.id %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{ show.name }}
+                        </h5>
+                        <p class="card-text">
+                            Number of tickets: {{ booking.num_tickets }}
+                        </p>
+                        <p class="card-text">
+                            Date and time: {{ booking.show.start_time.strftime('%-d %b %-I%p') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

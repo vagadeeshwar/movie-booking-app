@@ -1,0 +1,82 @@
+swagger: "2.0"
+info:
+  title: My API
+  version: "1.0"
+consumes:
+  - application/json
+produces:
+  - application/json
+basePath: /api
+
+paths:
+  /venue/{venue_id}:
+    get:
+      summary: Get a venue by ID
+      description: Returns a venue with the given ID
+      tags:
+        - venues
+      parameters:
+        - name: venue_id
+          in: path
+          description: ID of the venue to retrieve
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+        404:
+          description: Venue not found
+
+  /show/{show_id}:
+    get:
+      summary: Get a show by ID
+      description: Returns a show with the given ID
+      tags:
+        - shows
+      parameters:
+        - name: show_id
+          in: path
+          description: ID of the show to retrieve
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+        404:
+          description: Show not found
+
+  /booking/{booking_id}:
+    get:
+      summary: Get a booking by ID
+      description: Returns a booking with the given ID
+      tags:
+        - bookings
+      parameters:
+        - name: booking_id
+          in: path
+          description: ID of the booking to retrieve
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+        404:
+          description: Booking not found
+
+  /user/{user_id}:
+    get:
+      summary: Get a user by ID
+      description: Returns a user with the given ID
+      tags:
+        - users
+      parameters:
+        - name: user_id
+          in: path
+          description: ID of the user to retrieve
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+        404:
+          description: User not found

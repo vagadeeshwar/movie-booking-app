@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}
+Dashboard
+{% endblock %}
+
+<!-- {% block styles%}
+<style>
+    .horizontal-scroll {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+</style>
+{%endblock%} -->
+
+{% block content %}
+
+<div class="container">
+
+    <section>
+        <div class="row my-4">
+            <div class="col-md-3">
+                <h2>Venues</h2>
+            </div>
+            <div class="col-md-9 d-flex justify-content-end align-items-center">
+                {% if current_user.role == "admin" %}
+                <a href="{{url_for('venue.register')}}" class="btn btn-primary btn-sm me-3">Add Venue</a>
+                {% endif %}
+                <form action="{{url_for('venue.filter')}}" method="get">
+                    Filter:
+                    <input type="text" name="name" placeholder="Venue Name">
+                    <input type="text" name="city" placeholder="City">
+                    <input type="text" name="state" placeholder="State">
+                    <button class="btn btn-primary btn-sm">filter</button>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            {% for venue in venues %}
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{url_for('venue.venue', id=venue.id)}}">{{venue.name}}</a>
+                        </h5>
+                        <p class="card-text">
+                            {{ venue.city }}, {{ venue.state }}
+                        </p>
+                        <p class="card-text">
+                            {{ venue.mobile_number }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section>
+        <div class="row my-4">
+            <div class="col-md-3">
+                <h2>Shows</h2>
+            </div>
+            <div class="col-md-9 d-flex justify-content-end align-items-center">
+                {% if current_user.role == "admin" %}
+                <a href="{{ url_for('show.register') }}" class="btn btn-primary btn-sm me-3">Add Show</a>
+                {% endif %}
+                <form action="{{url_for('show.filter')}}" method="get">
+                    Filter:
+                    <input type="text" name="name" placeholder="Show Name">
+                    <input type="text" name="tag" placeholder="Tag">
+                    Rating:
+                    <input type="text" name="rating" placeholder="Approx rating">
+                    Date and Time Range:
+                    <input type="datetime-local" name="start_datetime" title="Start Date and Time">
+                    <input type="datetime-local" name="end_datetime" title="End Date and Time">
+                    <br>Price Range:
+                    <input type="text" name="min_price" placeholder="Minimum Price">
+                    <input type="text" name="max_price" placeholder="Maximum Price">
+                    <button class="btn btn-primary btn-sm">filter</button>
+                </form>
+
+            </div>
+        </div>
+        <!-- <div class="horizontal-scroll"> -->
+        <div class="row">
+            <!-- Loop through all shows and display them in a card format -->
+            {% for show in shows %}
+            <div class="col-md-5 col-lg-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{url_for('show.show', id=show.id)}}">{{ show.name }}</a> {{ show.rating|round(2)
+                            }}/5.0
+                        </h5>
+                        <p class="card-text">
+                            {{ show.tags }}
+                        </p>
+                        <p class="card-text">
+                            Price: ${{ show.ticket_price }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section>
+        <div class="row my-4">
+            <div class="col-md-3">
+                <h2>Bookings</h2>
+            </div>
+        </div>
+        <div class="row">
+            {% for booking in bookings %}
+            <div class="col-md-5 col-lg-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{url_for('show.show', id=booking.show.id)}}">{{ booking.show.name }}</a>
+                        </h5>
+
+                        <p class="card-text">
+                            Number of tickets: {{ booking.num_tickets }}
+                        </p>
+                        <p class="card-text">
+                            Date and time: {{ booking.show.start_time.strftime('%-d %b %-I%p') }}
+                        </p>
+                        {%if current_user.role=="admin"%}
+                        <p class="card-text">User: <a
+                                href="{{url_for('user.user',user_id=booking.user.id)}}">{{booking.user.username}}</a>
+                        </p>
+                        {%else%}
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-booking-id="{{booking.id}}">Delete
+                            Booking</button>
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    <!-- booking.id is dynamically passed to the modal with the help of data-* attribute and js-->
+    <!-- This is because booking object is not accessible outside the loop but modal has to be present outside efficiency -->
+    <!-- putting modal def inside loop is not efficient due to redundant html code  -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this booking? This action cannot be undone. Only 50% of the total
+                    ticket price will be refunded.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST">
+                        <input type="submit" value="Delete Booking" class="btn btn-danger">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {%if current_user.role=="admin"%}
+    <section>
+        <div class="row my-4">
+            <div class="col-md-3">
+                <h2>Users</h2>
+            </div>
+        </div>
+        <div class="row">
+            {% for user in users %}
+            <div class="col-md-5 col-lg-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{url_for('user.user', user_id=user.id)}}">{{ user.username }}</a>
+                        </h5>
+                        <p class="card-text">
+                            Role: {{ user.role }}
+                        </p>
+                        <p class="card-text">
+                            Mobile Number {{ user.mobile_number}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {%endif%}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+    const deleteForm = deleteModal.querySelector('form');
+    const deleteButtons = document.querySelectorAll('[data-booking-id]');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            const bookingId = event.target.getAttribute('data-booking-id');
+            deleteForm.action = "{{ url_for('booking.delete', id=0) }}".replace('/0', '/' + bookingId);
+        });
+    });
+</script>
+{% endblock %}

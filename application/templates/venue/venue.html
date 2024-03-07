@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}
+Venue Details
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">{{ venue.name }}</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Venue Details</h5>
+            <table class="table table-bordered">
+                <tbody>
+
+                    <tr>
+                        <th scope="row">Venue Name</th>
+                        <td>{{ venue.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">City</th>
+                        <td>{{ venue.city }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">State</th>
+                        <td>{{ venue.state }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Capacity</th>
+                        <td>{{ venue.capacity }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Mobile Number</th>
+                        <td>{{ venue.mobile_number }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Email</th>
+                        <td>{{ venue.email }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Description</th>
+                        <td>{{ venue.description }}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <section>
+        <div class="row my-4">
+            <div class="col-md-3">
+                <h2>Shows</h2>
+            </div>
+        </div>
+        <div class="row">
+            {% for show in venue.shows%}
+            <div class="col-md-5 col-lg-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{url_for('show.show', id=show.id)}}">{{ show.name }}</a> {{ show.rating|round(2)
+                            }}/5.0
+                        </h5>
+                        <p class="card-text">
+                            {{ show.tags }}
+                        </p>
+                        <p class="card-text">
+                            Price: ${{ show.ticket_price }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+{% endblock %}

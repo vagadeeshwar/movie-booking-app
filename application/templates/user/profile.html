@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+<!-- Someother things which could be added -> History of shows booked...some graph showing show booking pattern? -->
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Profile</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">User Details</h5>
+            <form action="{{ url_for('user.profile') }}" method="post" class="mb-2">
+                {{ form.hidden_tag() }}
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th scope="row">{{form.username.label}}</th>
+                            <td>{{ form.username }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{{form.old_password.label}}</th>
+                            <td>{{ form.old_password }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{{form.new_password.label}}</th>
+                            <td>{{ form.new_password }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{{form.email.label}}</th>
+                            <td>{{form.email}} </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Role</th>
+                            <td>{{ current_user.role }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Joined</th>
+                            <td>{{ current_user.created_at.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{{form.dob.label}}</th>
+                            <td>{{form.dob}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{{form.gender.label}}</th>
+                            <td>{{form.gender}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="mobile_number">Mobile Number</label></th>
+                            <td><input type="text" name="mobile_number" id="mobile_number"
+                                    placeholder="{{ current_user.mobile_number }}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Apply Changes</button>
+            </form>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete
+                Account</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your account? This action cannot be undone.
+                All your bookings will be lost!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('user.delete', id=current_user.id) }}" method="POST">
+                    {{ form.hidden_tag() }}
+                    <input type="submit" value="Delete Account" class="btn btn-danger">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
